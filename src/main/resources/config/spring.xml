@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+     http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+
+    <!-- 自动扫描该包，使SpringMVC认为包下用了@service注解的类是控制器 -->
+    <context:component-scan base-package="com.ssm.service" >
+        <context:include-filter type="annotation"
+                                expression="org.springframework.stereotype.Service"/>
+    </context:component-scan>
+    <!-- 加载资源文件 -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <!-- 配置资源文件 -->
+        <property name="locations">
+            <list>
+                <value>classpath:prop/jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
+    <!--配置数据源-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName">
+            <value>${jdbc.driver}</value>
+        </property>
+        <property name="url">
+            <value>${jdbc.url}</value>
+        </property>
+        <property name="username">
+            <value>${jdbc.user}</value>
+        </property>
+        <property name="password">
+            <value>${jdbc.passwd}</value>
+        </property>
+    </bean>
+
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 加载全局的配置文件 -->
+        <property name="configLocation" value="classpath:config/mybatis/mybatis-config.xml"></property>
+        <!-- 配置mapper的扫描，找到所有的mapper.xml映射文件。 -->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+        <!-- 配置类型别名 -->
+        <property name="typeAliasesPackage" value="com.ssm.pojo" />
+        <!--<property name="plugins">
+            <array>
+              <bean class="com.github.pagehelper.PageInterceptor">
+                <property name="properties">
+                  使用下面的方式配置参数，一行配置一个
+                  <value></value>
+                </property>
+              </bean>
+            </array>
+          </property>	-->
+    </bean>
+
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--配置mapper接口所在路径，扫描路径下的所有的mapper接口  如果配置多个mapper的包，使用逗号进行分割-->
+        <!--在mybatis当中，dao层与mapper是一样的，只是不同地方叫法不一样，mapper.xml是写sql的，是用来操作数据库的-->
+        <property name="basePackage">
+            <value>com.ssm.mapper</value>
+        </property>
+    </bean>
+
+</beans>
