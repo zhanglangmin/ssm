@@ -4,6 +4,7 @@
 
 <configuration>
 
+
     <settings>
         <setting name="cacheEnabled"             value="true" />  <!-- 全局映射器启用缓存 -->
         <setting name="useGeneratedKeys"         value="true" />  <!-- 允许 JDBC 支持自动生成主键 -->
@@ -12,6 +13,11 @@
         <setting name="useColumnLabel" value="true"/><!--是否使用列标签-->
         <!-- <setting name="mapUnderscoreToCamelCase" value="true"/>  驼峰式命名 -->
     </settings>
+
+    <!--配置类型别名-->
+    <typeAliases>
+        <package name="com.ssm.pojo"/>
+    </typeAliases>
 
     <!-- 分页助手 -->
     <plugins>

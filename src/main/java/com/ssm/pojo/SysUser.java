@@ -1,5 +1,6 @@
 package com.ssm.pojo;
 
+
 public class SysUser {
     private Integer id;
 

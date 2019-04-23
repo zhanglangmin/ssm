@@ -18,6 +18,15 @@
         <context:include-filter type="annotation"
                                 expression="org.springframework.stereotype.Service"/>
     </context:component-scan>
+
+
+
+
+    <!-- 自动扫描该包，使SpringMVC认为包下用了@Component注解的类是控制器
+    <context:component-scan base-package="com.ssm.common" >
+        <context:include-filter type="annotation"
+                                expression="org.springframework.stereotype.Component"/>
+    </context:component-scan>-->
     <!-- 加载资源文件 -->
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <!-- 配置资源文件 -->
@@ -28,7 +37,7 @@
         </property>
     </bean>
     <!--配置数据源-->
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <property name="driverClassName">
             <value>${jdbc.driver}</value>
         </property>
@@ -41,6 +50,23 @@
         <property name="password">
             <value>${jdbc.passwd}</value>
         </property>
+
+        <property name="maxActive" value="${maxActive}" />
+        <property name="initialSize" value="${initialSize}" />
+        <property name="maxWait" value="${maxWait}" />
+        <property name="minIdle" value="${minIdle}" />
+
+        <property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis}" />
+        <property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis}" />
+
+        <property name="validationQuery" value="SELECT 1 FROM DUAL" />
+        <property name="testWhileIdle" value="${testWhileIdle}" />
+        <property name="testOnBorrow" value="${testOnBorrow}" />
+        <property name="testOnReturn" value="${testOnReturn}" />
+        <!-- 开启Druid的监控统计功能 -->
+        <property name="filters" value="stat" />
+
+
     </bean>
 
     <bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
@@ -48,9 +74,9 @@
         <!-- 加载全局的配置文件 -->
         <property name="configLocation" value="classpath:config/mybatis/mybatis-config.xml"></property>
         <!-- 配置mapper的扫描，找到所有的mapper.xml映射文件。 -->
-        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
-        <!-- 配置类型别名 -->
-        <property name="typeAliasesPackage" value="com.ssm.pojo" />
+        <property name="mapperLocations" value="classpath:mapper/**/*.xml"/>
+        <!-- 配置类型别名
+        <property name="typeAliasesPackage" value="com.ssm.pojo" />-->
         <!--<property name="plugins">
             <array>
               <bean class="com.github.pagehelper.PageInterceptor">
@@ -64,6 +90,8 @@
     </bean>
 
 
+
+
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <!--配置mapper接口所在路径，扫描路径下的所有的mapper接口  如果配置多个mapper的包，使用逗号进行分割-->
         <!--在mybatis当中，dao层与mapper是一样的，只是不同地方叫法不一样，mapper.xml是写sql的，是用来操作数据库的-->
@@ -71,5 +99,16 @@
             <value>com.ssm.mapper</value>
         </property>
     </bean>
+
+
+    <!-- 注解方式配置事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+
 
 </beans>
